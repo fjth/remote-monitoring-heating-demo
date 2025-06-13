@@ -1,0 +1,34 @@
+name: Heating Weather Cron
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  simulate-weather:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run heating‐weather simulation
+        env:
+          PROJECT_ID:            ${{ secrets.PROJECT_ID }}
+          SUBJECT_TYPE_IDS:      ${{ secrets.SUBJECT_TYPE_IDS }}
+          BLOCKBAX_API_KEY:      ${{ secrets.BLOCKBAX_API_KEY }}
+          WEATHERAPI_KEY:        ${{ secrets.WEATHERAPI_KEY }}
+          MEASUREMENTS_POST_URL: ${{ secrets.MEASUREMENTS_POST_URL }}
+          PROPERTY_TYPE_ID:      ${{ secrets.PROPERTY_TYPE_ID }}
+          TZ:                    'Europe/Amsterdam'
+        run: python get_heatingcity_weather.py
